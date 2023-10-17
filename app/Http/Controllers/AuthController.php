@@ -21,9 +21,9 @@ class AuthController extends Controller
 
             if (!Auth::attempt($credentials)) {
                 return response()->json([
-                    'status_code' => 500,
+                    'status_code' => 401,
                     'message' => 'Unauthorized'
-                ]);
+                ],401);
             }
 
             $user = User::where('email', $request->email)->first();
@@ -37,6 +37,13 @@ class AuthController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'access_token' => $tokenResult,
+                'userData' => [
+                    'id' => $user->id,
+                    'role' => 'admin',
+                    'fullName' => $user->name ?? "",
+                    'email' => $user->email ?? "",
+                    'username' => "localuser",
+                ],
                 'token_type' => 'Bearer',
             ]);
         } catch (\Exception $error) {
@@ -44,7 +51,7 @@ class AuthController extends Controller
                 'status_code' => 500,
                 'message' => 'Error in Login',
                 'error' => $error,
-            ]);
+            ],500);
         }
     }
 }
