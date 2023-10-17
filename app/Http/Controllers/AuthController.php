@@ -19,15 +19,16 @@ class AuthController extends Controller
                 'password' => 'required'
             ]);
 
+            
             $credentials = request(['email', 'password']);
-
+            
             if (!Auth::attempt($credentials)) {
                 return response()->json([
                     'status_code' => 401,
                     'message' => 'Unauthorized'
                 ],401);
             }
-
+            
             $user = User::where('email', $request->email)->first();
 
             if (!Hash::check($request->password, $user->password, [])) {
@@ -90,5 +91,28 @@ class AuthController extends Controller
                 'error' => $th,
             ],500);
         }
+    }
+    
+    public function me(Request $request)
+    {
+        $user = Auth::user();
+        return response()->json([
+            'userData' => [
+                'id' => $user->id,
+                'role' => $user->roles->pluck('name')->first(),
+                'fullName' => $user->name ?? "",
+                'email' => $user->email ?? "",
+                'username' => "localuser",
+            ]
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::user()->tokens()->delete();
+        return response()->json([
+            'status_code' => 200,
+            'message' => 'Logged out',
+        ]);
     }
 }
