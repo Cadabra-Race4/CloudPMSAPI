@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ForgotPasswordRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -51,6 +53,34 @@ class AuthController extends Controller
                 'status_code' => 500,
                 'message' => 'Error in Login',
                 'error' => $error,
+            ],500);
+        }
+    }
+
+    /**
+     * Restore account password forget password
+     * @param string email
+     * @return <json>
+     */
+    public function ForgotPassword (ForgotPasswordRequest $request) {
+        try {
+            $email = $request->email;
+            $randomPassword = Str::random(6);
+    
+            $user = User::where('email', $email)->first();
+            if (empty($user)) {
+                return response()->json([
+                    'status_code' => 404,
+                    'message' => 'No required email found.',
+                ],404);
+            }
+            $user->password = $randomPassword;
+            $user->save();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Error in Login',
+                'error' => $th,
             ],500);
         }
     }

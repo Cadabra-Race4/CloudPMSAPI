@@ -15,6 +15,7 @@ use App\Http\Controllers\AuthController;
 |
 */
 Route::POST('/login', [AuthController::class, 'login'])->name("api.login");
+Route::POST('/forgot-password', [AuthController::class, 'ForgotPassword'])->name("api.forgotPassword");
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::get('/users', 'UserController@index');
