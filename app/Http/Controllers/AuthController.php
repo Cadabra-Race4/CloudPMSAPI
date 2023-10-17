@@ -54,4 +54,17 @@ class AuthController extends Controller
             ],500);
         }
     }
+    public function me(Request $request)
+    {
+        $user = Auth::user();
+        return [
+            'userData' => [
+                'id' => $user->id,
+                'role' => $user->roles->pluck('name'),
+                'fullName' => $user->name ?? "",
+                'email' => $user->email ?? "",
+                'username' => "localuser",
+            ]
+        ];
+    }
 }
