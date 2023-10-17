@@ -76,6 +76,13 @@ class AuthController extends Controller
             }
             $user->password = $randomPassword;
             $user->save();
+
+            return response()->json([
+                'status_code' => 200,
+                'data' => [
+                    'password' => $randomPassword,
+                ],
+            ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status_code' => 500,
