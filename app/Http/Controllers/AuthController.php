@@ -60,7 +60,7 @@ class AuthController extends Controller
         return response()->json([
             'userData' => [
                 'id' => $user->id,
-                'role' => $user->roles->pluck('name'),
+                'role' => $user->roles->pluck('name')->first(),
                 'fullName' => $user->name ?? "",
                 'email' => $user->email ?? "",
                 'username' => "localuser",
