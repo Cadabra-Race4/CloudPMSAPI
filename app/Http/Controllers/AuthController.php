@@ -57,7 +57,7 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         $user = Auth::user();
-        return [
+        return response()->json([
             'userData' => [
                 'id' => $user->id,
                 'role' => $user->roles->pluck('name'),
@@ -65,6 +65,14 @@ class AuthController extends Controller
                 'email' => $user->email ?? "",
                 'username' => "localuser",
             ]
-        ];
+        ]);
+    }
+    public function logout(Request $request)
+    {
+        Auth::user()->tokens()->delete();
+        return response()->json([
+            'status_code' => 200,
+            'message' => 'Logged out',
+        ]);
     }
 }

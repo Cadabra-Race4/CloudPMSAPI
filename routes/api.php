@@ -18,5 +18,6 @@ use App\Http\Controllers\UserController;
 Route::POST('/login', [AuthController::class, 'login'])->name("api.login");
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/user/me', [AuthController::class, 'me'])->name("api.user.me");
+    Route::GET('/user/me', [AuthController::class, 'me'])->name("api.user.me");
+    Route::POST('/logout', [AuthController::class, 'logout'])->name("api.logout");
 });
