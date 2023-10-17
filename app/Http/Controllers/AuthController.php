@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -94,7 +95,7 @@ class AuthController extends Controller
     }
     
     public function me(Request $request)
-    {
+    {        
         $user = Auth::user();
         return response()->json([
             'userData' => [
@@ -114,5 +115,17 @@ class AuthController extends Controller
             'status_code' => 200,
             'message' => 'Logged out',
         ]);
+    }
+    public function sendMail(Request $request)
+    {
+        $to_name = 'RECEIVER_NAME';
+        $to_email = 'phongpham@gmail.com';
+        $data = array('name' => "Cloudways (sender_name)", "body" => "A test mail");
+
+        Mail::send('mail', $data, function ($message) use ($to_name, $to_email) {
+            $message->to($to_email, $to_name)
+            ->subject('Laravel Test Mail');
+            $message->from('phongpham@gmail.com', 'Test Mail');
+        });
     }
 }
