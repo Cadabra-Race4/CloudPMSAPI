@@ -2,16 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Handler\ApiResponseHandler;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Models\User;
+use App\Repositories\SendmailRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
+    protected $mail;
+    protected $apiResponse;
+
+    public function __construct()
+    {
+        $this->mail = new SendmailRepository();
+        $this->apiResponse = new ApiResponseHandler();
+    }
+
     public function login(Request $request)
     {
         try {
@@ -20,14 +30,11 @@ class AuthController extends Controller
                 'password' => 'required'
             ]);
 
-            
             $credentials = request(['email', 'password']);
             
             if (!Auth::attempt($credentials)) {
-                return response()->json([
-                    'status_code' => 401,
-                    'message' => 'Unauthorized'
-                ],401);
+                $result = $this->apiResponse->errorResponse("NOTFOUND");
+                return response()->json($result, $result['status']);
             }
             
             $user = User::where('email', $request->email)->first();
@@ -38,24 +45,20 @@ class AuthController extends Controller
 
             $tokenResult = $user->createToken('authToken')->plainTextToken;
 
-            return response()->json([
-                'status_code' => 200,
-                'access_token' => $tokenResult,
-                'userData' => [
-                    'id' => $user->id,
-                    'role' => 'admin',
-                    'fullName' => $user->name ?? "",
-                    'email' => $user->email ?? "",
-                    'username' => "localuser",
-                ],
+            $userData = [
+                'id' => $user->id,
+                'role' => 'admin',
+                'fullName' => $user->name ?? "",
+                'email' => $user->email ?? "",
+                'username' => "localuser",
                 'token_type' => 'Bearer',
-            ]);
+                'access_token' => $tokenResult,
+            ];
+            $result = $this->apiResponse->SuccessResponse($userData);
+            return response()->json($result);
         } catch (\Exception $error) {
-            return response()->json([
-                'status_code' => 500,
-                'message' => 'Error in Login',
-                'error' => $error,
-            ],500);
+            $result = $this->apiResponse->errorResponse();
+            return response()->json($result, $result['status']);
         }
     }
 
@@ -64,33 +67,30 @@ class AuthController extends Controller
      * @param string email
      * @return <json>
      */
-    public function ForgotPassword (ForgotPasswordRequest $request) {
+    public function ForgotPassword (Request $request) {
         try {
             $email = $request->email;
             $randomPassword = Str::random(6);
     
             $user = User::where('email', $email)->first();
             if (empty($user)) {
-                return response()->json([
-                    'status_code' => 404,
-                    'message' => 'No required email found.',
-                ],404);
+                $result = $this->apiResponse->errorResponse("NOTFOUND");
+                return response()->json($result, $result['status']);
             }
             $user->password = $randomPassword;
             $user->save();
 
-            return response()->json([
-                'status_code' => 200,
-                'data' => [
-                    'password' => $randomPassword,
-                ],
-            ]);
+            $toName = "ThanhDang";
+            $data = array('name' => $toName, "password" => $randomPassword);
+            $this->mail->setNameTo($toName);
+            $this->mail->setMailTo($email);
+            $this->mail->SendMailForgotPassword($data);
+
+            $result = $this->apiResponse->SuccessResponse();
+            return response()->json($result);
         } catch (\Throwable $th) {
-            return response()->json([
-                'status_code' => 500,
-                'message' => 'Error in Login',
-                'error' => $th,
-            ],500);
+            $result = $this->apiResponse->errorResponse();
+            return response()->json($result, $result['status']);
         }
     }
     
@@ -115,17 +115,5 @@ class AuthController extends Controller
             'status_code' => 200,
             'message' => 'Logged out',
         ]);
-    }
-    public function sendMail(Request $request)
-    {
-        $to_name = 'RECEIVER_NAME';
-        $to_email = 'phongpham@gmail.com';
-        $data = array('name' => "Cloudways (sender_name)", "body" => "A test mail");
-
-        Mail::send('mail', $data, function ($message) use ($to_name, $to_email) {
-            $message->to($to_email, $to_name)
-            ->subject('Laravel Test Mail');
-            $message->from('phongpham@gmail.com', 'Test Mail');
-        });
     }
 }
