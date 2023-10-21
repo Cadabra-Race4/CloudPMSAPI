@@ -15,11 +15,13 @@ class AuthController extends Controller
 {
     protected $mail;
     protected $apiResponse;
+    protected $user;
 
     public function __construct()
     {
         $this->mail = new SendmailRepository();
         $this->apiResponse = new ApiResponseHandler();
+        $this->user = Auth::user();
     }
 
     public function login(Request $request)
@@ -74,7 +76,7 @@ class AuthController extends Controller
     
             $user = User::where('email', $email)->first();
             if (empty($user)) {
-                $result = $this->apiResponse->errorResponse("NOTFOUND");
+                $result = $this->apiResponse->errorResponse("NOT_FOUND");
                 return response()->json($result, $result['status']);
             }
             $user->password = $randomPassword;
@@ -93,24 +95,10 @@ class AuthController extends Controller
             return response()->json($result, $result['status']);
         }
     }
-    
-    public function me(Request $request)
-    {        
-        $user = Auth::user();
-        return response()->json([
-            'userData' => [
-                'id' => $user->id,
-                'role' => $user->roles->pluck('name')->first(),
-                'fullName' => $user->name ?? "",
-                'email' => $user->email ?? "",
-                'username' => "localuser",
-            ]
-        ]);
-    }
 
     public function logout(Request $request)
     {
-        Auth::user()->tokens()->delete();
+        $this->user->tokens()->delete();
         return response()->json([
             'status_code' => 200,
             'message' => 'Logged out',

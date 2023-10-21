@@ -11,8 +11,8 @@ class ApiResponseHandler {
      */
     public function SuccessResponse ($data = []) {
         $key = "SUCCESS";
-        $rules = config('API_RULES');
-        $statusCode     = $rules[$key]['code'];
+        $rules = config('api-rule.API_RULES');
+        $statusCode     = $rules[$key]['status_code'];
         $message        = $rules[$key]['message'];
         $description    = $rules[$key]['description'];
         $responseData = [
@@ -20,7 +20,7 @@ class ApiResponseHandler {
             'message' 		=>  $message,
             'description'   =>  $description,
             'responseTime'	=>	date('c'),
-            'results' 		=>	empty($data) ? [] : $data
+            'results' 		=>	$data
         ];
         return $responseData;
     }
@@ -30,10 +30,10 @@ class ApiResponseHandler {
      * @param number $httpCode
      * @return array
      */
-    public function errorResponse($httpCode = "FATALERROR")
+    public function errorResponse($httpCode = "FATAL_ERROR", $data = [])
     {
-        $rules = config('API_RULES');
-        $statusCode     = $rules[$httpCode]['code'];
+        $rules = config('api-rule.API_RULES');
+        $statusCode     = $rules[$httpCode]['status_code'];
         $message        = $rules[$httpCode]['message'];
         $description    = $rules[$httpCode]['description'];
         $responseData = [
@@ -41,7 +41,7 @@ class ApiResponseHandler {
             'message' 		=>  $message,
             'description'   =>  $description,
             'responseTime'	=>	date('c'),
-            'results' 		=>	[]
+            'results' 		=>	$data
         ];
 
         return $responseData;
