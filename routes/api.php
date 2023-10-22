@@ -18,11 +18,10 @@ use App\Http\Controllers\UserController;
 Route::POST('/login', [AuthController::class, 'login'])->name("api.login");
 Route::POST('/forgot-password', [AuthController::class, 'ForgotPassword'])->name("api.forgotPassword");
 
-Route::controller(UserController::class)->prefix('user')->group(function () {
-    Route::post('/profile/update', 'UpdateUserInfo')->name("api.user.update");
-    Route::GET('/user/me', 'me')->name("api.user.me");
-});
-
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::controller(UserController::class)->prefix('user')->group(function () {
+        Route::post('/profile/update', 'UpdateUserInfo')->name("api.user.update");
+        Route::get('/me', 'me')->name("api.user.me");
+    });
     Route::POST('/logout', [AuthController::class, 'logout'])->name("api.logout");
 });

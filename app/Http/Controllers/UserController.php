@@ -11,12 +11,10 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     protected $apiResponse;
-    protected $user;
 
     public function __construct()
     {
         $this->apiResponse = new ApiResponseHandler();
-        $this->user = Auth::user();
     }
 
     /**
@@ -25,11 +23,12 @@ class UserController extends Controller
      */
     public function me()
     {
+        $user = Auth::user();
         $userData = [
-            'id' => $this->user->id,
-            'role' => $this->user->roles->pluck('name')->first(),
-            'fullName' => $this->user->name ?? "",
-            'email' => $this->user->email ?? "",
+            'id' => $user->id,
+            'role' => $user->roles->pluck('name')->first(),
+            'fullName' => $user->name ?? "",
+            'email' => $user->email ?? "",
             'username' => "localuser",
         ];
         $result = $this->apiResponse->SuccessResponse($userData);

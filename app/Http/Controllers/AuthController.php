@@ -15,13 +15,11 @@ class AuthController extends Controller
 {
     protected $mail;
     protected $apiResponse;
-    protected $user;
 
     public function __construct()
     {
         $this->mail = new SendmailRepository();
         $this->apiResponse = new ApiResponseHandler();
-        $this->user = Auth::user();
     }
 
     public function login(Request $request)
@@ -35,10 +33,10 @@ class AuthController extends Controller
             $credentials = request(['email', 'password']);
             
             if (!Auth::attempt($credentials)) {
-                $result = $this->apiResponse->errorResponse("NOTFOUND");
+                $result = $this->apiResponse->errorResponse("NOT_FOUND");
                 return response()->json($result, $result['status']);
             }
-            
+
             $user = User::where('email', $request->email)->first();
 
             if (!Hash::check($request->password, $user->password, [])) {
@@ -98,7 +96,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $this->user->tokens()->delete();
+        Auth::user()->tokens()->delete();
         return response()->json([
             'status_code' => 200,
             'message' => 'Logged out',
