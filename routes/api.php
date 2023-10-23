@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
@@ -20,8 +19,9 @@ Route::POST('/forgot-password', [AuthController::class, 'ForgotPassword'])->name
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::controller(UserController::class)->prefix('user')->group(function () {
-        Route::post('/profile/update', 'UpdateUserInfo')->name("api.user.update");
         Route::get('/me', 'me')->name("api.user.me");
+        Route::post('/profile/update', 'UpdateUserInfo')->name("api.user.update");
+        Route::post('/profile/change-password', 'ChangeUserPassword')->name("api.user.change-password");
     });
     Route::POST('/logout', [AuthController::class, 'logout'])->name("api.logout");
 });

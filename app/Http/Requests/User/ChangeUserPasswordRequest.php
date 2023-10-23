@@ -1,13 +1,22 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
+use App\Handler\ApiResponseHandler;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ForgotPasswordRequest extends FormRequest
+class ChangeUserPasswordRequest extends FormRequest
 {
+
+    protected $apiResponse;
+
+    public function __construct()
+    {
+        $this->apiResponse = new ApiResponseHandler();
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,16 +35,9 @@ class ForgotPasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'bail|required|email|string',
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'email.required' => 'Email must not leave blank.',
-            'email.email' => 'Email must be in the format.',
-            'email.string' => 'Email must be a string type.'
+            'old_password' => 'bail|string|max:255',
+            'password' => 'bail|string|max:255|confirmed',
+            'password_confirmation' => 'bail|string|max:255',
         ];
     }
 

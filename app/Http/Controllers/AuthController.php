@@ -67,7 +67,7 @@ class AuthController extends Controller
      * @param string email
      * @return <json>
      */
-    public function ForgotPassword (Request $request) {
+    public function ForgotPassword (ForgotPasswordRequest $request) {
         try {
             $email = $request->email;
             $randomPassword = Str::random(6);
@@ -80,7 +80,7 @@ class AuthController extends Controller
             $user->password = $randomPassword;
             $user->save();
 
-            $toName = "ThanhDang";
+            $toName = $user->name;
             $data = array('name' => $toName, "password" => $randomPassword);
             $this->mail->setNameTo($toName);
             $this->mail->setMailTo($email);
