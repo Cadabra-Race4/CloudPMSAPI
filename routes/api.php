@@ -19,7 +19,10 @@ use App\Http\Controllers\UserController;
 Route::POST('/login', [AuthController::class, 'login'])->name("api.login");
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::GET('/user/me', [AuthController::class, 'me'])->name("api.user.me");
+    Route::controller(UserController::class)->prefix('user')->group(function () {
+        Route::post('/profile/update', 'UpdateUserInfo')->name("api.user.update");
+        Route::get('/me', 'me')->name("api.user.me");
+    });
     Route::POST('/logout', [AuthController::class, 'logout'])->name("api.logout");
 
     Route::GET('/projects/list', [ProjectsController::class,'index'])->name('api.projects');

@@ -33,10 +33,10 @@ class AuthController extends Controller
             $credentials = request(['email', 'password']);
             
             if (!Auth::attempt($credentials)) {
-                $result = $this->apiResponse->errorResponse("NOTFOUND");
+                $result = $this->apiResponse->errorResponse("NOT_FOUND");
                 return response()->json($result, $result['status']);
             }
-            
+
             $user = User::where('email', $request->email)->first();
 
             if (!Hash::check($request->password, $user->password, [])) {
@@ -74,7 +74,7 @@ class AuthController extends Controller
     
             $user = User::where('email', $email)->first();
             if (empty($user)) {
-                $result = $this->apiResponse->errorResponse("NOTFOUND");
+                $result = $this->apiResponse->errorResponse("NOT_FOUND");
                 return response()->json($result, $result['status']);
             }
             $user->password = $randomPassword;
@@ -92,20 +92,6 @@ class AuthController extends Controller
             $result = $this->apiResponse->errorResponse();
             return response()->json($result, $result['status']);
         }
-    }
-    
-    public function me(Request $request)
-    {        
-        $user = Auth::user();
-        return response()->json([
-            'userData' => [
-                'id' => $user->id,
-                'role' => $user->roles->pluck('name')->first(),
-                'fullName' => $user->name ?? "",
-                'email' => $user->email ?? "",
-                'username' => "localuser",
-            ]
-        ]);
     }
 
     public function logout(Request $request)
