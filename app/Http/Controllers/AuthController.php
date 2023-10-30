@@ -33,7 +33,7 @@ class AuthController extends Controller
             $credentials = request(['email', 'password']);
             
             if (!Auth::attempt($credentials)) {
-                $result = $this->apiResponse->errorResponse("NOT_FOUND");
+                $result = $this->apiResponse->errorResponse("NOT_AUTHENTICATED");
                 return response()->json($result, $result['status']);
             }
 

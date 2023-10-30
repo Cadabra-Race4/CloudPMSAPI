@@ -7,6 +7,11 @@ return [
             'message' => 'Success',
             'description' => '',
         ],
+        "NOT_AUTHENTICATED" => [
+            'status_code' => 403,
+            'message' => 'Login information is not correct',
+            'description' => 'ログイン情報が正しくありません'
+        ],
         "NOT_FOUND" => [
             'status_code' => 404,
             'message' => 'Not Found',
