@@ -3,13 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Projects;
-use App\Http\Requests\StoreProjectsRequest;
-use App\Http\Requests\UpdateProjectsRequest;
 use GuzzleHttp\Psr7\Request;
 use PhpParser\Node\Stmt\TryCatch;
+use App\Handler\ApiResponseHandler;
+use App\Http\Requests\StoreProjectsRequest;
+use App\Http\Requests\UpdateProjectsRequest;
 
 class ProjectsController extends Controller
 {
+    protected $apiResponse;
+
+    public function __construct()
+    {
+        $this->apiResponse = new ApiResponseHandler();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -18,8 +25,8 @@ class ProjectsController extends Controller
     public function index()
     {
         return response()->json([
-            "Projects"=> Projects::with('users')->get(),
-            ]);
+            "Projects" => Projects::with('users')->get(),
+        ]);
     }
 
     /**
@@ -44,10 +51,9 @@ class ProjectsController extends Controller
             $project = Projects::create($request->validated());
         } catch (\Exception $e) {
             return response()->json([
-                'error'=> $e->getMessage(),
-                ],400);
+                'error' => $e->getMessage(),
+            ], 400);
         }
-        
     }
 
     /**
@@ -78,7 +84,16 @@ class ProjectsController extends Controller
      */
     public function edit(Projects $projects)
     {
-        //
+        try {
+            $project = Projects::with('users')->where('id', $projects->id)->first();
+            return response()->json([
+                'project' => $project
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 400);
+        }
     }
 
     /**
@@ -90,7 +105,18 @@ class ProjectsController extends Controller
      */
     public function update(UpdateProjectsRequest $request, Projects $projects)
     {
-        //
+        try {
+            $project = Projects::with('users')->where('id', $projects->id)->update($request->validated());
+            if ($project) {
+                $result = $this->apiResponse->SuccessResponse();
+                return response()->json($result);
+            }
+            $result = $this->apiResponse->errorResponse();
+            return response()->json($result, $result['status']);
+        } catch (\Throwable $th) {
+            $result = $this->apiResponse->errorResponse();
+            return response()->json($result, $result['status']);
+        }
     }
 
     /**
@@ -101,8 +127,17 @@ class ProjectsController extends Controller
      */
     public function destroy(Projects $projects)
     {
-        //
+        try {
+            $project = Projects::with('users')->where('id', $projects->id)->first()->delete();
+            if ($project) {
+                $result = $this->apiResponse->SuccessResponse();
+                return response()->json($result);
+            }
+            $result = $this->apiResponse->errorResponse();
+            return response()->json($result, $result['status']);
+        } catch (\Throwable $th) {
+            $result = $this->apiResponse->errorResponse();
+            return response()->json($result, $result['status']);
+        }
     }
-
-    
 }
