@@ -25,5 +25,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
     Route::POST('/logout', [AuthController::class, 'logout'])->name("api.logout");
 
+    //Project
     Route::GET('/projects/list', [ProjectsController::class,'index'])->name('api.projects');
+    Route::GET('/projects/{id}/edit', [ProjectsController::class,'edit'])->name('api.projects.edit');
+    Route::PUT('projects/{id}', [ProjectsController::class,'update'])->name('api.projects.update');
+    Route::DELETE('/projects/{id}', [ProjectsController::class,'destroy'])->name('api.projects.delete');
+
 });

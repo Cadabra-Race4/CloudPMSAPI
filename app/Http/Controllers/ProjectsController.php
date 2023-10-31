@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Projects;
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\TryCatch;
 use App\Handler\ApiResponseHandler;
 use App\Http\Requests\StoreProjectsRequest;
@@ -82,10 +82,10 @@ class ProjectsController extends Controller
      * @param  \App\Models\Projects  $projects
      * @return \Illuminate\Http\Response
      */
-    public function edit(Projects $projects)
+    public function edit($projects)
     {
         try {
-            $project = Projects::with('users')->where('id', $projects->id)->first();
+            $project = Projects::with('users')->where('id', $projects)->first();
             return response()->json([
                 'project' => $project
             ]);
@@ -103,10 +103,10 @@ class ProjectsController extends Controller
      * @param  \App\Models\Projects  $projects
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProjectsRequest $request, Projects $projects)
+    public function update(Request $request, $id)
     {
         try {
-            $project = Projects::with('users')->where('id', $projects->id)->update($request->validated());
+            $project = Projects::find($id)->update($request->all());
             if ($project) {
                 $result = $this->apiResponse->SuccessResponse();
                 return response()->json($result);
@@ -125,10 +125,10 @@ class ProjectsController extends Controller
      * @param  \App\Models\Projects  $projects
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Projects $projects)
+    public function destroy($project)
     {
         try {
-            $project = Projects::with('users')->where('id', $projects->id)->first()->delete();
+            $project = Projects::where('id', $project)->first()->delete();
             if ($project) {
                 $result = $this->apiResponse->SuccessResponse();
                 return response()->json($result);
