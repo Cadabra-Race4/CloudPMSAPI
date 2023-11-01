@@ -44,7 +44,6 @@ class LeaveController extends Controller
     public function createNewLeaveType (CreateLeaveTypeRequest $request) {
         try {
             $result_create = LeaveType::createInfo($request->all());
-            dd($result_create);
             if ($result_create) {
                 $result = $this->apiResponse->SuccessResponse();
                 return response()->json($result);
