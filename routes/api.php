@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -23,5 +24,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/profile/update', 'UpdateUserInfo')->name("api.user.update");
         Route::post('/profile/change-password', 'ChangeUserPassword')->name("api.user.change-password");
     });
+
+    Route::controller(LeaveController::class)->prefix('leave')->group(function () {
+        Route::get('/leave-types/get-all', 'getAllLeaveType')->name("api.leavetype.getAll");
+        Route::post('/leave-types/create', 'createNewLeaveType')->name("api.leavetype.create");
+        Route::post('/leave-types/update', 'updateInfoLeaveType')->name("api.leavetype.update");
+    });
+
     Route::POST('/logout', [AuthController::class, 'logout'])->name("api.logout");
 });
