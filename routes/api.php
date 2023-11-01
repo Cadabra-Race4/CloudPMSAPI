@@ -29,6 +29,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/leave-types/get-all', 'getAllLeaveType')->name("api.leavetype.getAll");
         Route::post('/leave-types/create', 'createNewLeaveType')->name("api.leavetype.create");
         Route::post('/leave-types/update', 'updateInfoLeaveType')->name("api.leavetype.update");
+        Route::post('/leave-types/delete', 'deleteInfoLeaveType')->name("api.leavetype.delete");
     });
 
     Route::POST('/logout', [AuthController::class, 'logout'])->name("api.logout");
