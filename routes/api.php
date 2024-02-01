@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Users\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +19,7 @@ Route::POST('/login', [AuthController::class, 'login'])->name("api.login");
 Route::POST('/forgot-password', [AuthController::class, 'ForgotPassword'])->name("api.forgotPassword");
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::GET('/user/me', [AuthController::class, 'me'])->name("api.user.me");
+    Route::GET("/user/me", [AuthController::class, 'me'])->name("api.user.me");
+    Route::GET("/user/list", [UserController::class, 'listUsers'])->name("api.user.list");
     Route::POST('/logout', [AuthController::class, 'logout'])->name("api.logout");
 });
